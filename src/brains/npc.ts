@@ -3,7 +3,7 @@ import { openai as OpenAIVercel } from "@ai-sdk/openai";
 import { generateObject } from "ai";
 import { z } from "zod";
 
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 
 const openaiVercel = OpenAIVercel("gpt-4o");
 const schema = z.object({
@@ -12,6 +12,7 @@ const schema = z.object({
   class: z.string(),
   description: z.string(),
   backstory: z.string(),
+  secret: z.string(),
   personalyTraits: z.array(z.string()),
   ideals: z.array(z.string()),
   bonds: z.array(z.string()),

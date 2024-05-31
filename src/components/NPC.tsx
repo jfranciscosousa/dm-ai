@@ -26,6 +26,12 @@ async function InnerNPC({ uuid, prompt }: Props) {
       </div>
 
       <div className="flex flex-col gap-1">
+        <h3 className="text-xl font-bold">Secret</h3>
+
+        <p>{npc.secret}</p>
+      </div>
+
+      <div className="flex flex-col gap-1">
         <h3 className="text-xl font-bold">Traits</h3>
 
         <ul className="list-disc pl-4">
