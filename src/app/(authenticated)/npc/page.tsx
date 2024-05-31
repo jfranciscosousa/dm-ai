@@ -8,7 +8,6 @@ type Props = {
 };
 
 export default async function NpcPage({ searchParams }: Props) {
-  console.log(searchParams)
   const search =
     typeof searchParams.search === "string" ? searchParams.search : undefined;
   const uuid =
