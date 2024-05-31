@@ -2,12 +2,14 @@
 import { ClipboardCheckIcon, ClipboardIcon } from "lucide-react";
 import { Button, ButtonProps } from "./ui/button";
 import { useEffect, useRef, useState } from "react";
+import { useToast } from "./ui/use-toast";
 
 interface Props extends Omit<ButtonProps, "title" | "onClick"> {
   value: string;
 }
 
 export default function CopyToClipboard({ value, ...props }: Props) {
+  const { toast } = useToast();
   const timeout = useRef<NodeJS.Timeout | undefined>();
   const [done, setDone] = useState(false);
 
@@ -19,6 +21,7 @@ export default function CopyToClipboard({ value, ...props }: Props) {
 
   async function handleClick() {
     await navigator.clipboard.writeText(value);
+    toast({ title: "Content copied to clipboard!" });
     setDone(true);
     timeout.current = setTimeout(() => setDone(false), 1000);
   }
