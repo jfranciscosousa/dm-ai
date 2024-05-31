@@ -30,6 +30,14 @@ export default function AuthenticatedLayout({ children }: Props) {
                   </Link>
                 </Button>
               </li>
+
+              <li>
+                <Button asChild>
+                  <Link className="w-full" href="/npc">
+                    NPC
+                  </Link>
+                </Button>
+              </li>
             </ul>
           </nav>
         </div>

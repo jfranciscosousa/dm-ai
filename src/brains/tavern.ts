@@ -1,15 +1,10 @@
-"use server";
+import { redisGet, redisSet } from "@/brains/redis";
+import { openai as OpenAIVercel } from "@ai-sdk/openai";
 import { generateObject } from "ai";
 import { z } from "zod";
-import { openai as OpenAIVercel } from "@ai-sdk/openai";
 
-import { LRUCache } from "lru-cache";
-
-const cache = new LRUCache({
-  max: 1_000_000,
-});
 const openaiVercel = OpenAIVercel("gpt-4o");
-
+const SCHEMA_VERSION = 1;
 const schema = z.object({
   name: z.string(),
   longDescription: z.string().describe("To be read out loud to the players"),
@@ -39,12 +34,23 @@ const schema = z.object({
   imagePrompt: z
     .string()
     .describe("Prompt that will be used to generate image with DALL E 3"),
+  version: z
+    .literal(SCHEMA_VERSION)
+    .describe("Just put the literal value there."),
 });
 
 export type Tavern = z.infer<typeof schema>;
 
-export async function generateTavern(prompt: string): Promise<Tavern> {
-  if (cache.get(prompt)) return cache.get(prompt) as Tavern;
+export async function generateTavern(
+  uuid: string,
+  prompt: string
+): Promise<Tavern> {
+  const cachedTavern = await redisGet<Tavern>(uuid);
+
+  if (cachedTavern && cachedTavern.version === SCHEMA_VERSION) {
+    console.log("CACHE HIT");
+    return cachedTavern;
+  }
 
   const { object } = await generateObject({
     model: openaiVercel,
@@ -55,7 +61,8 @@ export async function generateTavern(prompt: string): Promise<Tavern> {
     `,
   });
 
-  cache.set(prompt, object);
+  console.log("CACHE MISS");
+  await redisSet(uuid, object);
 
   return object;
 }
