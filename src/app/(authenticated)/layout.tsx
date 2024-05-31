@@ -1,4 +1,5 @@
 import { logoutAction } from "@/actions/logout";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ReactNode } from "react";
@@ -33,9 +34,13 @@ export default function AuthenticatedLayout({ children }: Props) {
           </nav>
         </div>
 
-        <form action={logoutAction}>
-          <Button>Logout</Button>
-        </form>
+        <div className="flex flex-col gap-2">
+          <ThemeSwitcher />
+
+          <form action={logoutAction}>
+            <Button>Logout</Button>
+          </form>
+        </div>
       </header>
 
       <div className="flex-grow w-full p-4 overflow-auto ml-48 min-h-screen">
