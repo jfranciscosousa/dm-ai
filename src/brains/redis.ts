@@ -1,31 +1,18 @@
-import { createClient } from "redis";
+import { Redis } from "@upstash/redis";
 
-async function buildClient() {
-  const redis = createClient({
-    url: process.env.REDIS_URL,
-  });
-  await redis.connect();
-
-  return redis;
-}
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_URL,
+  token: process.env.UPSTASH_REDIS_TOKEN,
+});
 
 export async function redisGet<T>(key: string): Promise<T | undefined> {
-  const client = await buildClient();
-  const value = await client.get(key);
-  await client.disconnect();
+  const value = await redis.get<T>(key);
 
   if (!value) return undefined;
 
-  try {
-    return JSON.parse(value) as T;
-  } catch {
-    client.del(key);
-    return undefined;
-  }
+  return value as T;
 }
 
 export async function redisSet(key: string, value: unknown): Promise<void> {
-  const client = await buildClient();
-  await client.set(key, JSON.stringify(value));
-  await client.disconnect();
+  await redis.set(key, JSON.stringify(value));
 }
