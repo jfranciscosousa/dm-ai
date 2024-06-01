@@ -17,7 +17,7 @@ export default function AuthenticatedLayout({ children }: Props) {
             <ul className="flex flex-col gap-2">
               <li>
                 <Button asChild>
-                  <Link className="w-full" href="/">
+                  <Link className="w-full" href="/" prefetch>
                     Home
                   </Link>
                 </Button>
@@ -25,7 +25,7 @@ export default function AuthenticatedLayout({ children }: Props) {
 
               <li>
                 <Button asChild>
-                  <Link className="w-full" href="/tavern">
+                  <Link className="w-full" href="/tavern" prefetch>
                     Tavern
                   </Link>
                 </Button>
@@ -33,7 +33,7 @@ export default function AuthenticatedLayout({ children }: Props) {
 
               <li>
                 <Button asChild>
-                  <Link className="w-full" href="/npc">
+                  <Link className="w-full" href="/npc" prefetch>
                     NPC
                   </Link>
                 </Button>
