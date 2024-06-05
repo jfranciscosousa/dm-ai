@@ -1,11 +1,11 @@
 import GeneratorShell from "@/components/GeneratorShell";
-import Tavern from "@/components/Tavern";
+import Shop from "@/components/Shop";
 
 type Props = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
-export default async function TavernPage({ searchParams }: Props) {
+export default async function ShopPage({ searchParams }: Props) {
   const search =
     typeof searchParams.search === "string" ? searchParams.search : undefined;
   const uuid =
@@ -14,10 +14,10 @@ export default async function TavernPage({ searchParams }: Props) {
   return (
     <GeneratorShell
       search={search}
-      title="Tavern generator"
-      placeholder="A beautiful elven inn..."
+      title="Shop generator"
+      placeholder="A mysterious alchemical shop in the middle of a forest"
     >
-      {search && uuid && <Tavern prompt={search} uuid={uuid} />}
+      {search && uuid && <Shop prompt={search} uuid={uuid} />}
     </GeneratorShell>
   );
 }

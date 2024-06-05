@@ -33,6 +33,14 @@ export default function AuthenticatedLayout({ children }: Props) {
 
               <li>
                 <Button asChild>
+                  <Link className="w-full" href="/shop" prefetch>
+                    Shop
+                  </Link>
+                </Button>
+              </li>
+
+              <li>
+                <Button asChild>
                   <Link className="w-full" href="/npc" prefetch>
                     NPC
                   </Link>
