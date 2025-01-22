@@ -1,4 +1,3 @@
-import { redisGet, redisSet } from "@/brains/redis";
 import { openai as OpenAIVercel } from "@ai-sdk/openai";
 import { generateObject } from "ai";
 import { z } from "zod";
@@ -41,13 +40,6 @@ export async function generateTavern(
   uuid: string,
   prompt: string
 ): Promise<Tavern> {
-  const unparsedCache = schema.safeParse(await redisGet<Tavern>(uuid));
-
-  if (unparsedCache.success) {
-    console.log("CACHE HIT");
-    return unparsedCache.data;
-  }
-
   const { object } = await generateObject({
     model: openaiVercel,
     schema,
@@ -56,9 +48,6 @@ export async function generateTavern(
     Please provide as much detail as you can.
     `,
   });
-
-  console.log("CACHE MISS");
-  await redisSet(uuid, object);
 
   return object;
 }

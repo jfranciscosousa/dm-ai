@@ -1,4 +1,3 @@
-import { redisGet, redisSet } from "@/brains/redis";
 import { openai as OpenAIVercel } from "@ai-sdk/openai";
 import { generateObject } from "ai";
 import { z } from "zod";
@@ -23,14 +22,7 @@ const schema = z.object({
 
 export type NPC = z.infer<typeof schema>;
 
-export async function generateNpc(uuid: string, prompt: string): Promise<NPC> {
-  const unparsedCache = schema.safeParse(await redisGet<NPC>(uuid));
-
-  if (unparsedCache.success) {
-    console.log("CACHE HIT");
-    return unparsedCache.data;
-  }
-
+export async function generateNpc(prompt: string): Promise<NPC> {
   const { object } = await generateObject({
     model: openaiVercel,
     schema,
@@ -40,9 +32,6 @@ export async function generateNpc(uuid: string, prompt: string): Promise<NPC> {
     `,
     temperature: 0.8,
   });
-
-  console.log("CACHE MISS");
-  await redisSet(uuid, object);
 
   return object;
 }

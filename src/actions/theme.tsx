@@ -15,11 +15,11 @@ function parseTheme(unparsedTheme: unknown): Theme {
 export async function setTheme(formData: FormData) {
   const theme = parseTheme(formData.get("theme"));
 
-  cookies().set("theme", theme);
+  (await cookies()).set("theme", theme);
 }
 
 export async function getTheme(): Promise<Theme> {
-  const unparsedTheme = cookies().get("theme")?.value;
+  const unparsedTheme = (await cookies()).get("theme")?.value;
 
   if (unparsedTheme !== "dark" && unparsedTheme !== "light") {
     return "light";
