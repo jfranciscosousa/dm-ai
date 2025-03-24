@@ -2,14 +2,15 @@ import GeneratorShell from "@/components/GeneratorShell";
 import NPC from "@/components/NPC";
 
 type Props = {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export default async function NpcPage({ searchParams }: Props) {
+  const searchUnparsed = (await searchParams).search;
+  const uuidUnparsed = (await searchParams).uuid;
   const search =
-    typeof searchParams.search === "string" ? searchParams.search : undefined;
-  const uuid =
-    typeof searchParams.uuid === "string" ? searchParams.uuid : undefined;
+    typeof searchUnparsed === "string" ? searchUnparsed : undefined;
+  const uuid = typeof uuidUnparsed === "string" ? uuidUnparsed : undefined;
 
   return (
     <GeneratorShell
