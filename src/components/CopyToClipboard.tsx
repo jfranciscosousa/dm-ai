@@ -1,4 +1,5 @@
 "use client";
+
 import { ClipboardCheckIcon, ClipboardIcon } from "lucide-react";
 import { Button, ButtonProps } from "./ui/button";
 import { useEffect, useRef, useState } from "react";
@@ -10,7 +11,7 @@ interface Props extends Omit<ButtonProps, "title" | "onClick"> {
 
 export default function CopyToClipboard({ value, ...props }: Props) {
   const { toast } = useToast();
-  const timeout = useRef<NodeJS.Timeout | undefined>();
+  const timeout = useRef<NodeJS.Timeout>(null);
   const [done, setDone] = useState(false);
 
   useEffect(() => {

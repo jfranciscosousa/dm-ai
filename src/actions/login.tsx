@@ -11,7 +11,7 @@ export async function loginAction(currentState: unknown, formData: FormData) {
     return { error: "Invalid password" };
   }
 
-  cookies().set("auth", password, {
+  (await cookies()).set("auth", password, {
     secure: true,
     httpOnly: true,
     maxAge: 31_556_926,

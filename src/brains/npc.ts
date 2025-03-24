@@ -22,7 +22,7 @@ const schema = z.object({
 
 export type NPC = z.infer<typeof schema>;
 
-export async function generateNpc(prompt: string): Promise<NPC> {
+export async function generateNpc(uuid: string, prompt: string): Promise<NPC> {
   const { object } = await generateObject({
     model: openaiVercel,
     schema,
