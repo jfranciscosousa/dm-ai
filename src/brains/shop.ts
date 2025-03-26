@@ -1,5 +1,8 @@
+"use server";
+
 import { openai as OpenAIVercel } from "@ai-sdk/openai";
 import { generateObject } from "ai";
+import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
 const openaiVercel = OpenAIVercel("gpt-4o");
@@ -30,6 +33,7 @@ const schema = z.object({
       "Prompt that will be used to generate image with DALL E 3. Put both the shop and the owner in focus"
     ),
 });
+const cache = new LRUCache({ max: 1000, ttl: 1000 * 60 * 60 });
 
 export type Shop = z.infer<typeof schema>;
 
@@ -37,6 +41,8 @@ export async function generateShop(
   uuid: string,
   prompt: string
 ): Promise<Shop> {
+  if (cache.get(uuid)) return cache.get(uuid) as Shop;
+
   const { object } = await generateObject({
     model: openaiVercel,
     schema,
@@ -45,6 +51,8 @@ export async function generateShop(
     Please provide as much detail as you can.
     `,
   });
+
+  cache.set(uuid, object);
 
   return object;
 }

@@ -1,8 +1,9 @@
 "use client";
 
 import { loginAction } from "@/actions/login";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import { Button } from "./ui/button";
-import { useFormState, useFormStatus } from "react-dom";
 
 function FormContent({ error }: { error?: string }) {
   const { pending } = useFormStatus();
@@ -44,7 +45,7 @@ function FormContent({ error }: { error?: string }) {
 }
 
 export default function Login() {
-  const [state, formAction] = useFormState(loginAction, undefined);
+  const [state, formAction] = useActionState(loginAction, undefined);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4 py-12 dark:bg-gray-950">

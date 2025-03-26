@@ -1,15 +1,29 @@
+"use client";
+
 import { generateNpc } from "@/brains/npc";
+import useStoragedValue from "@/hooks/useStoragedValue";
 import { Loader2 } from "lucide-react";
-import { Suspense } from "react";
+import useSWR from "swr";
 import CopyToClipboard from "./CopyToClipboard";
+import { useGeneratorShellStore } from "./GeneratorShell";
 
-type Props = {
-  uuid: string;
-  prompt: string;
-};
+export default function NPC() {
+  const { uuid, prompt } = useGeneratorShellStore();
+  const { data, isLoading } = useSWR(
+    ["npc", uuid, prompt],
+    ([_, uuid, prompt]) => (uuid && prompt ? generateNpc(uuid, prompt) : null)
+  );
+  const npc = useStoragedValue("npc", data);
 
-async function InnerNPC({ uuid, prompt }: Props) {
-  const npc = await generateNpc(uuid, prompt);
+  if (isLoading) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center">
+        <Loader2 className="w-48 h-48 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!npc) return null;
 
   return (
     <div className="flex flex-col gap-3 max-w-3xl">
@@ -86,20 +100,5 @@ async function InnerNPC({ uuid, prompt }: Props) {
         <p>{npc.imagePrompt}</p>
       </div>
     </div>
-  );
-}
-
-export default async function NPC(props: Props) {
-  return (
-    <Suspense
-      key={props.uuid}
-      fallback={
-        <div className="w-full h-full flex flex-col items-center justify-center">
-          <Loader2 className="w-48 h-48 animate-spin text-muted-foreground" />
-        </div>
-      }
-    >
-      <InnerNPC {...props} />
-    </Suspense>
   );
 }

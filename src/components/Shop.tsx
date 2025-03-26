@@ -1,14 +1,28 @@
+"use client";
+
 import { generateShop } from "@/brains/shop";
 import { Loader2 } from "lucide-react";
-import { Suspense } from "react";
+import useSWR from "swr";
+import useStoragedValue from "@/hooks/useStoragedValue";
+import { useGeneratorShellStore } from "./GeneratorShell";
 
-type Props = {
-  uuid: string;
-  prompt: string;
-};
+export default function Shop() {
+  const { uuid, prompt } = useGeneratorShellStore();
+  const { data, isLoading } = useSWR(
+    ["shop", uuid, prompt],
+    ([_, uuid, prompt]) => (uuid && prompt ? generateShop(uuid, prompt) : null)
+  );
+  const shop = useStoragedValue("shop", data);
 
-async function InnerShop({ uuid, prompt }: Props) {
-  const shop = await generateShop(uuid, prompt);
+  if (isLoading) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center">
+        <Loader2 className="w-48 h-48 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!shop) return null;
 
   return (
     <div className="flex flex-col gap-3 max-w-3xl">
@@ -66,20 +80,5 @@ async function InnerShop({ uuid, prompt }: Props) {
         </div>
       </div>
     </div>
-  );
-}
-
-export default async function Shop(props: Props) {
-  return (
-    <Suspense
-      key={props.uuid}
-      fallback={
-        <div className="w-full h-full flex flex-col items-center justify-center">
-          <Loader2 className="w-48 h-48 animate-spin text-muted-foreground" />
-        </div>
-      }
-    >
-      <InnerShop {...props} />
-    </Suspense>
   );
 }

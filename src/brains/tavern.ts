@@ -1,5 +1,8 @@
+"use server";
+
 import { openai as OpenAIVercel } from "@ai-sdk/openai";
 import { generateObject } from "ai";
+import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
 const openaiVercel = OpenAIVercel("gpt-4o");
@@ -33,6 +36,7 @@ const schema = z.object({
     .string()
     .describe("Prompt that will be used to generate image with DALL E 3"),
 });
+const cache = new LRUCache({ max: 1000, ttl: 1000 * 60 * 60 });
 
 export type Tavern = z.infer<typeof schema>;
 
@@ -40,6 +44,8 @@ export async function generateTavern(
   uuid: string,
   prompt: string
 ): Promise<Tavern> {
+  if (cache.get(uuid)) return cache.get(uuid) as Tavern;
+
   const { object } = await generateObject({
     model: openaiVercel,
     schema,
@@ -48,6 +54,8 @@ export async function generateTavern(
     Please provide as much detail as you can.
     `,
   });
+
+  cache.set(uuid, object);
 
   return object;
 }

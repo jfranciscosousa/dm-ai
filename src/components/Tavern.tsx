@@ -1,14 +1,32 @@
+"use client";
+
 import { generateTavern } from "@/brains/tavern";
 import { Loader2 } from "lucide-react";
-import { Suspense } from "react";
+import useSWR from "swr";
+import { useGeneratorShellStore } from "./GeneratorShell";
+import useStoragedValue from "@/hooks/useStoragedValue";
 
-type Props = {
-  uuid: string;
-  prompt: string;
-};
+export default function Tavern() {
+  const { uuid, prompt } = useGeneratorShellStore();
+  const { data, isLoading } = useSWR(
+    ["tavern", uuid, prompt],
+    ([_, uuid, prompt]) => {
+      if (!prompt || !uuid) return;
 
-async function InnerTavern({ uuid, prompt }: Props) {
-  const tavern = await generateTavern(uuid, prompt);
+      return generateTavern(uuid, prompt);
+    }
+  );
+  const tavern = useStoragedValue("tavern", data);
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center">
+        <Loader2 className="w-48 h-48 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!tavern) return null;
 
   return (
     <div className="flex flex-col gap-3 max-w-3xl">
@@ -80,20 +98,5 @@ async function InnerTavern({ uuid, prompt }: Props) {
         </ul>
       </div>
     </div>
-  );
-}
-
-export default async function Tavern(props: Props) {
-  return (
-    <Suspense
-      key={props.uuid}
-      fallback={
-        <div className="w-full h-full flex flex-col items-center justify-center">
-          <Loader2 className="w-48 h-48 animate-spin text-muted-foreground" />
-        </div>
-      }
-    >
-      <InnerTavern {...props} />
-    </Suspense>
   );
 }
